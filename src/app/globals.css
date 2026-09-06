@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(200, 245, 66, 0.08), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(245, 185, 66, 0.06), transparent 50%),
+    #0b0e0c;
+}
+
+::selection {
+  background: #c8f542;
+  color: #0b0e0c;
+}
