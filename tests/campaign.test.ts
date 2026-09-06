@@ -58,4 +58,51 @@ describe("paused campaign payload", () => {
     expect(assertPausedOnly(undefined)).toBe("PAUSED");
     expect(() => assertPausedOnly("ENABLED")).toThrow(/enable path/);
   });
+
+  it("rejects apply without CREATE PAUSED confirm phrase", () => {
+    expect(() =>
+      parseCampaignInput({
+        customerId: "1234567890",
+        name: "Apply paused",
+        dailyBudgetMicros: 1_000_000,
+        dryRun: false,
+      }),
+    ).toThrow(/CREATE PAUSED/);
+    expect(() =>
+      parseCampaignInput({
+        customerId: "1234567890",
+        name: "Apply paused",
+        dailyBudgetMicros: 1_000_000,
+        dryRun: false,
+        confirmPhrase: "please",
+      }),
+    ).toThrow(/CREATE PAUSED/);
+  });
+
+  it("accepts apply when confirm phrase matches and still stays PAUSED", () => {
+    const input = parseCampaignInput({
+      customerId: "1234567890",
+      name: "Apply paused",
+      dailyBudgetMicros: 1_000_000,
+      dryRun: false,
+      confirmPhrase: "CREATE PAUSED",
+    });
+    const request = buildPausedSearchCampaignMutate(input);
+    expect(request.validateOnly).toBe(false);
+    const campaign = (
+      request.mutateOperations[1] as { campaignOperation: { create: { status: string } } }
+    ).campaignOperation.create;
+    expect(campaign.status).toBe("PAUSED");
+  });
+
+  it("does not require a confirm phrase for dry-run", () => {
+    expect(() =>
+      parseCampaignInput({
+        customerId: "1234567890",
+        name: "Dry run",
+        dailyBudgetMicros: 1_000_000,
+        dryRun: true,
+      }),
+    ).not.toThrow();
+  });
 });

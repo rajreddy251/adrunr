@@ -1,4 +1,4 @@
-import { assertPausedOnly, resolveDryRun } from "./safety";
+import { assertPausedOnly, CONFIRM_PAUSED_PHRASE, resolveDryRun } from "./safety";
 import { digitsOnly } from "./ids";
 
 export type CampaignCreateInput = {
@@ -6,6 +6,7 @@ export type CampaignCreateInput = {
   name: string;
   dailyBudgetMicros: number;
   dryRun?: unknown;
+  confirmPhrase?: string;
 };
 
 export type MutateRequest = {
@@ -52,12 +53,28 @@ export function parseCampaignInput(body: unknown): CampaignCreateInput {
     }
   }
 
-  return {
+  const input: CampaignCreateInput = {
     customerId,
     name,
     dailyBudgetMicros: Math.trunc(dailyBudgetMicros),
     dryRun: raw.dryRun,
+    confirmPhrase: raw.confirmPhrase === undefined ? undefined : String(raw.confirmPhrase),
   };
+
+  if (!resolveDryRun(input.dryRun) && input.confirmPhrase !== CONFIRM_PAUSED_PHRASE) {
+    throw Object.assign(
+      new Error(`Type ${CONFIRM_PAUSED_PHRASE} to apply a PAUSED campaign. Dry-run is preferred.`),
+      {
+        status: 400,
+        info: {
+          kind: "validation",
+          hint: "POST dryRun:false requires confirmPhrase exactly CREATE PAUSED. Dry-run does not.",
+        },
+      },
+    );
+  }
+
+  return input;
 }
 
 export function buildPausedSearchCampaignMutate(

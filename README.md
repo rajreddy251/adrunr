@@ -61,7 +61,7 @@ Local secrets live in `.env` or `.env.local` only. `.env.example` is the committ
 
 1. **Connect** — `/api/auth/google` starts the OAuth web flow. Callback stores refresh/access tokens server-side. **Disconnect** clears `.data/tokens.json`.
 2. **List accounts** — `GET /api/ads/accounts` queries `customer_client` under the MCC login-customer-id, then falls back to `customers:listAccessibleCustomers`. Names and ids are shown; Test Account / `CUSTOMER_NOT_ENABLED` errors are mapped to readable hints.
-3. **Paused / dry-run create** — `POST /api/ads/campaigns` with `{ customerId, name, dailyBudgetMicros, dryRun }`. Always `status: PAUSED`. `dryRun` (default `true`) sets `validateOnly` and returns the mutate payload without applying. `dryRun: false` still creates PAUSED only.
+3. **Paused / dry-run create** — `POST /api/ads/campaigns` with `{ customerId, name, dailyBudgetMicros, dryRun, confirmPhrase }`. Always `status: PAUSED`. `dryRun` (default `true`) sets `validateOnly` and returns the mutate payload without applying. `dryRun: false` still creates PAUSED only and **requires** `confirmPhrase` exactly `CREATE PAUSED` (enforced server-side, not just in the UI).
 4. **GA4 stub** — `GET /api/ga4/report` runs a 7-day sessions + conversions sample. Missing property id, missing Analytics scope, or API errors **soft-fail** with a placeholder so Ads ops keep working.
 
 ## Demo without Google credentials

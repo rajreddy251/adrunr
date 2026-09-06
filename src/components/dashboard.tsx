@@ -149,6 +149,7 @@ export function Dashboard() {
         name: campaignName,
         dailyBudgetMicros,
         dryRun,
+        confirmPhrase,
         status: "PAUSED",
       }),
     });
