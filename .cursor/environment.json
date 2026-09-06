@@ -1,0 +1,10 @@
+{
+  "name": "Adrunr",
+  "install": "npm ci",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "ADRUNR_MOCK=1 npm run dev"
+    }
+  ]
+}
