@@ -244,7 +244,7 @@ export async function createPausedSearchCampaign(body: unknown): Promise<{
   if (env.mockMode) {
     return {
       dryRun: request.validateOnly,
-      applied: false,
+      applied: !request.validateOnly,
       status: "PAUSED",
       request,
       response: {
