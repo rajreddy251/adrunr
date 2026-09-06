@@ -24,19 +24,32 @@ export function parseCampaignInput(body: unknown): CampaignCreateInput {
   const dailyBudgetMicros = Number(raw.dailyBudgetMicros);
 
   if (!customerId) {
-    throw Object.assign(new Error("customerId is required."), { status: 400 });
+    throw Object.assign(new Error("customerId is required."), {
+      status: 400,
+      info: { kind: "validation", hint: "Pass a 10-digit Google Ads customer id." },
+    });
   }
   if (!name) {
-    throw Object.assign(new Error("Campaign name is required."), { status: 400 });
+    throw Object.assign(new Error("Campaign name is required."), {
+      status: 400,
+      info: { kind: "validation" },
+    });
   }
   if (!Number.isFinite(dailyBudgetMicros) || dailyBudgetMicros < MIN_BUDGET_MICROS) {
     throw Object.assign(
       new Error(`dailyBudgetMicros must be an integer >= ${MIN_BUDGET_MICROS} (API requires a budget; campaign stays PAUSED).`),
-      { status: 400 },
+      { status: 400, info: { kind: "validation" } },
     );
   }
   if (raw.status) {
-    assertPausedOnly(String(raw.status));
+    try {
+      assertPausedOnly(String(raw.status));
+    } catch (error) {
+      throw Object.assign(error instanceof Error ? error : new Error(String(error)), {
+        status: 400,
+        info: { kind: "validation", hint: "Adrunr only creates PAUSED campaigns." },
+      });
+    }
   }
 
   return {

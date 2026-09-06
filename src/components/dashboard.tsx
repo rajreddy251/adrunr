@@ -430,8 +430,7 @@ export function Dashboard() {
       </section>
 
       <footer className="pb-8 text-xs text-moss-500">
-        Adrunr MVP · Google Ads REST + official google-auth-library / googleapis · no secrets in git · marketing site is
-        adrunr-site
+        Adrunr MVP · Google Ads REST + official googleapis OAuth · no secrets in git · marketing site is adrunr-site
       </footer>
     </div>
   );
